@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,23 +31,25 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className="flex flex-col min-h-screen">
-          <header className="bg-green-700 text-white shadow-md">
+          <header style={{ backgroundColor: 'var(--primary)', color: 'var(--primary-foreground)' }} className="shadow-md">
             <div className="container mx-auto p-4">
               <nav className="flex justify-between items-center">
-                <a href="/" className="text-xl font-bold">Tennis Score Tracker</a>
+                <Link href="/" className="text-xl font-bold">Tennis Score Tracker</Link>
                 <div className="space-x-4">
-                  <a href="/matches/new" className="hover:underline">New Match</a>
+                  <Button asChild style={{ backgroundColor: 'var(--secondary)', color: 'var(--secondary-foreground)' }}>
+                    <Link href="/matches/new">New Match</Link>
+                  </Button>
                 </div>
               </nav>
             </div>
           </header>
 
-          <main className="flex-grow container mx-auto p-4">
+          <main className="flex-grow container mx-auto p-4 py-8">
             {children}
           </main>
 
-          <footer className="bg-gray-100 border-t">
-            <div className="container mx-auto p-4 text-center text-gray-600">
+          <footer style={{ backgroundColor: 'var(--muted)', color: 'var(--muted-foreground)' }} className="border-t">
+            <div className="container mx-auto p-4 text-center">
               <p>© {new Date().getFullYear()} Tennis Score Tracker</p>
             </div>
           </footer>

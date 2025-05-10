@@ -3,6 +3,10 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { MatchWithTeams } from '@/types/database';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 interface Set {
   setNumber: number;
@@ -178,133 +182,163 @@ export default function MatchDetails({ params }: { params: Promise<{ id: string 
   };
 
   if (loading) {
-    return <div className="text-center py-8">Loading match details...</div>;
+    return <div className="flex justify-center items-center py-12">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+        <p className="text-muted-foreground">Loading match details...</p>
+      </div>
+    </div>;
   }
 
   if (!match) {
-    return <div className="text-center py-8">Match not found</div>;
+    return <div className="text-center py-12">
+      <h2 className="text-2xl font-bold mb-2">Match not found</h2>
+      <Button asChild variant="outline" className="mt-4">
+        <Link href="/">Return to Home</Link>
+      </Button>
+    </div>;
   }
 
   return (
     <div>
-      <div className="mb-6">
-        <Link href="/" className="text-green-600 hover:text-green-800">
-          ← Back to Matches
-        </Link>
-        <h1 className="text-2xl font-bold mt-2">{match.title}</h1>
-        <p className="text-gray-600">{match.date}</p>
+      <div className="mb-8">
+        <Button asChild variant="outline" size="sm" className="mb-4">
+          <Link href="/">← Back to Matches</Link>
+        </Button>
+        <h1 className="text-3xl font-bold">{match.title}</h1>
+        <p className="text-muted-foreground">{match.date}</p>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h2 className="text-lg font-semibold mb-2">{match.teamA.name}</h2>
-          <div className="text-sm text-gray-600">
-            Players: {match.teamA.players.join(', ')}
-          </div>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>{match.teamA.name}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              Players: {match.teamA.players.join(', ')}
+            </p>
+          </CardContent>
+        </Card>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h2 className="text-lg font-semibold mb-2">{match.teamB.name}</h2>
-          <div className="text-sm text-gray-600">
-            Players: {match.teamB.players.join(', ')}
-          </div>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>{match.teamB.name}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              Players: {match.teamB.players.join(', ')}
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Score Display */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border mb-8">
-        <h2 className="text-lg font-semibold mb-4">Score</h2>
-
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b">
-                <th className="text-left py-2">Set</th>
-                <th className="text-center py-2">{match.teamA.name}</th>
-                <th className="text-center py-2">{match.teamB.name}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sets.map((set) => (
-                <tr key={set.setNumber} className="border-b">
-                  <td className="py-2">{set.setNumber}</td>
-                  <td className="text-center py-2">{set.teamAGames}</td>
-                  <td className="text-center py-2">{set.teamBGames}</td>
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>Score</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left py-2">Set</th>
+                  <th className="text-center py-2">{match.teamA.name}</th>
+                  <th className="text-center py-2">{match.teamB.name}</th>
                 </tr>
-              ))}
+              </thead>
+              <tbody>
+                {sets.map((set) => (
+                  <tr key={set.setNumber} className="border-b">
+                    <td className="py-2">{set.setNumber}</td>
+                    <td className="text-center py-2">{set.teamAGames}</td>
+                    <td className="text-center py-2">{set.teamBGames}</td>
+                  </tr>
+                ))}
 
-              {match.status !== 'completed' && (
-                <tr>
-                  <td className="py-2">{currentSet.setNumber}</td>
-                  <td className="text-center py-2">{currentSet.teamAGames}</td>
-                  <td className="text-center py-2">{currentSet.teamBGames}</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                {match.status !== 'completed' && (
+                  <tr>
+                    <td className="py-2">{currentSet.setNumber}</td>
+                    <td className="text-center py-2">{currentSet.teamAGames}</td>
+                    <td className="text-center py-2">{currentSet.teamBGames}</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Score Controls - Only show if match is not completed */}
       {match.status !== 'completed' && (
-        <div className="bg-white p-6 rounded-lg shadow-sm border mb-8">
-          <h2 className="text-lg font-semibold mb-4">Update Score</h2>
+        <Card>
+          <CardHeader>
+            <CardTitle>Update Score</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="font-medium mb-3">{match.teamA.name}</h3>
+                <div className="flex items-center space-x-4">
+                  <Button
+                    onClick={decrementTeamAGames}
+                    variant="outline"
+                    size="icon"
+                    className="h-10 w-10 rounded-full"
+                  >
+                    -
+                  </Button>
+                  <span className="text-3xl font-bold">{currentSet.teamAGames}</span>
+                  <Button
+                    onClick={incrementTeamAGames}
+                    variant="outline"
+                    size="icon"
+                    className="h-10 w-10 rounded-full bg-primary/10"
+                  >
+                    +
+                  </Button>
+                </div>
+              </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <h3 className="font-medium mb-2">{match.teamA.name}</h3>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={decrementTeamAGames}
-                  className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-xl"
-                >
-                  -
-                </button>
-                <span className="text-2xl font-bold">{currentSet.teamAGames}</span>
-                <button
-                  onClick={incrementTeamAGames}
-                  className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-xl"
-                >
-                  +
-                </button>
+              <div>
+                <h3 className="font-medium mb-3">{match.teamB.name}</h3>
+                <div className="flex items-center space-x-4">
+                  <Button
+                    onClick={decrementTeamBGames}
+                    variant="outline"
+                    size="icon"
+                    className="h-10 w-10 rounded-full"
+                  >
+                    -
+                  </Button>
+                  <span className="text-3xl font-bold">{currentSet.teamBGames}</span>
+                  <Button
+                    onClick={incrementTeamBGames}
+                    variant="outline"
+                    size="icon"
+                    className="h-10 w-10 rounded-full bg-primary/10"
+                  >
+                    +
+                  </Button>
+                </div>
               </div>
             </div>
-
-            <div>
-              <h3 className="font-medium mb-2">{match.teamB.name}</h3>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={decrementTeamBGames}
-                  className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-xl"
-                >
-                  -
-                </button>
-                <span className="text-2xl font-bold">{currentSet.teamBGames}</span>
-                <button
-                  onClick={incrementTeamBGames}
-                  className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-xl"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 flex justify-end space-x-4">
-            <button
+          </CardContent>
+          <CardFooter className="flex justify-end space-x-4">
+            <Button
               onClick={completeSet}
-              className="px-4 py-2 border border-green-600 text-green-600 rounded-md hover:bg-green-50"
+              variant="outline"
             >
               Complete Set
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={completeMatch}
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
             >
               Complete Match
-            </button>
-          </div>
-        </div>
+            </Button>
+          </CardFooter>
+        </Card>
       )}
     </div>
   );
