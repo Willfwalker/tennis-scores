@@ -10,7 +10,7 @@ interface Set {
   teamBGames: number;
 }
 
-export default function MatchDetails({ params }: { params: { id: string } }) {
+export default function MatchDetails({ params }: { params: Promise<{ id: string }> }) {
   const [match, setMatch] = useState<MatchWithTeams | null>(null);
   const [loading, setLoading] = useState(true);
   const [sets, setSets] = useState<Set[]>([]);
@@ -19,7 +19,8 @@ export default function MatchDetails({ params }: { params: { id: string } }) {
   useEffect(() => {
     const fetchMatch = async () => {
       try {
-        const response = await fetch(`/api/matches/${params.id}`);
+        const { id } = await params;
+        const response = await fetch(`/api/matches/${id}`);
 
         if (!response.ok) {
           throw new Error('Failed to fetch match');
@@ -45,7 +46,7 @@ export default function MatchDetails({ params }: { params: { id: string } }) {
     };
 
     fetchMatch();
-  }, [params.id]);
+  }, [params]);
 
   const incrementTeamAGames = () => {
     setCurrentSet(prev => ({ ...prev, teamAGames: prev.teamAGames + 1 }));
